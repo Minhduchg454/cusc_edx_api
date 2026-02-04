@@ -4,3 +4,4 @@ include README.rst
 include requirements/base.in
 include requirements/constraints.txt
 recursive-include cusc_edx_api *.html *.png *.gif *.js *.css *.jpg *.jpeg *.svg
+recursive-include cusc_edx_api/templates *
