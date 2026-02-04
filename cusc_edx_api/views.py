@@ -8,7 +8,7 @@ from django.shortcuts import get_object_or_404
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_GET, require_POST
 
-from cusc_edx_api.services.mail_service import send_templated_email
+
 from opaque_keys import InvalidKeyError
 from common.djangoapps.course_modes.models import CourseMode
 
@@ -404,16 +404,7 @@ def course_detail(request, course_id):
 def send_mail_api(request):
     """
     POST /api/cusc-edx-api/mailer/send/
-
-    Body:
-    {
-      "to": ["user@gmail.com"],
-      "subject": "Tiêu đề",
-      "template": "emails/order_pending.html",
-      "context": {...}
-    }
     """
-    # dùng chung auth với Node
     auth_resp = _check_node_auth(request)
     if auth_resp is not None:
         return auth_resp
@@ -432,6 +423,8 @@ def send_mail_api(request):
             {"error": "Missing to | subject | template"},
             status=400,
         )
+
+    from cusc_edx_api.services.mail_service import send_templated_email
 
     try:
         send_templated_email(
