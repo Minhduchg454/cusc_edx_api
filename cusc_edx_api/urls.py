@@ -20,4 +20,8 @@ urlpatterns = [
     # endpoint lấy pricing theo course_id
     path("course-pricing/<path:course_id>/", views.course_pricing, name="course_pricing"),
     path("course-detail/<path:course_id>/", views.course_detail, name="course_detail"),
+
+    # email
+    path("mailer/send/", views.send_mail_api, name="mailer-send"),
+    path("mailer/send-simple/", views.send_mail_simple_api, name="mailer-send-simple"),
 ]

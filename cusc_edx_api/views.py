@@ -8,12 +8,14 @@ from django.shortcuts import get_object_or_404
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_GET, require_POST
 
+from cusc_edx_api.services.mail_service import send_templated_email
 from opaque_keys import InvalidKeyError
 from common.djangoapps.course_modes.models import CourseMode
 
 from opaque_keys.edx.keys import CourseKey
 from common.djangoapps.student.models import CourseEnrollment
 from openedx.core.djangoapps.content.course_overviews.models import CourseOverview
+from django.core.mail import send_mail
 
 from .models import EcommerceOrder
 
@@ -395,3 +397,75 @@ def course_detail(request, course_id):
     }
 
     return JsonResponse(data)
+
+
+@csrf_exempt
+@require_POST
+def send_mail_api(request):
+    """
+    POST /api/cusc-edx-api/mailer/send/
+
+    Body:
+    {
+      "to": ["user@gmail.com"],
+      "subject": "Tiêu đề",
+      "template": "emails/order_pending.html",
+      "context": {...}
+    }
+    """
+    # dùng chung auth với Node
+    auth_resp = _check_node_auth(request)
+    if auth_resp is not None:
+        return auth_resp
+
+    data, err = _parse_json(request)
+    if err:
+        return err
+
+    to_emails = data.get("to")
+    subject = data.get("subject")
+    template = data.get("template")
+    context = data.get("context", {})
+
+    if not to_emails or not subject or not template:
+        return JsonResponse(
+            {"error": "Missing to | subject | template"},
+            status=400,
+        )
+
+    try:
+        send_templated_email(
+            to_emails=to_emails,
+            subject=subject,
+            template_name=template,
+            context=context,
+        )
+    except Exception as e:
+        return JsonResponse(
+            {"error": str(e)},
+            status=500,
+        )
+
+    return JsonResponse({"ok": True})
+
+
+
+@csrf_exempt
+@require_POST
+def send_mail_simple_api(request):
+    import smtplib
+    smtplib.SMTP.debuglevel = 1
+    print("EMAIL_BACKEND (runtime) =", settings.EMAIL_BACKEND)
+    print("IN REQUEST CONTEXT")
+    sent = send_mail(
+        "TEST Gmail SMTP – OK (via API)",
+        "Nếu bạn nhận được mail này thì API dùng send_mail hoạt động.",
+        None,  # BẮT BUỘC giữ None
+        ["taolink14@gmail.com"],
+        fail_silently=False,
+    )
+
+    return JsonResponse({
+        "ok": True,
+        "sent": sent,
+    })
