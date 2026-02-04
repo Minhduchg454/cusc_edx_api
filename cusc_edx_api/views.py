@@ -424,8 +424,7 @@ def send_mail_api(request):
             status=400,
         )
 
-    from cusc_edx_api.services.mail_service import send_templated_email
-
+    from .services.mail_service import send_templated_email
     try:
         send_templated_email(
             to_emails=to_emails,
