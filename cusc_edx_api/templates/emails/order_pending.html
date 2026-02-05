@@ -1,9 +1,55 @@
-<p>Xin chào {{ username }},</p>
+<div
+    style="
+        font-family: Arial, sans-serif;
+        line-height: 1.6;
+        color: #333;
+        max-width: 600px;
+        border: 1px solid #eee;
+        padding: 20px;
+    "
+>
+    <h2 style="color: #f0ad4e">Chúng tôi đã ghi nhận đơn hàng của bạn</h2>
 
-<p>Bạn đã đăng ký khóa học:</p>
+    <p>Xin chào <strong>{{ name }}</strong>,</p>
 
-<p><strong>{{ course_name }}</strong></p>
+    <p>
+        Chúng tôi đã <strong>ghi nhận đơn đăng ký khóa học</strong> của bạn. Hiện tại, hệ thống đang
+        <strong>chờ xác nhận giao dịch chuyển khoản</strong>.
+    </p>
 
-<p>Trạng thái: <b>Chờ xác nhận chuyển khoản</b></p>
+    <p>
+        Ngay sau khi việc chuyển khoản được xác nhận thành công, bạn sẽ được cấp quyền truy cập vào khóa học và bắt đầu
+        học tập.
+    </p>
 
-<p>Trân trọng,<br />CUSC Open edX</p>
+    <div
+        style="background-color: #fff8e1; border: 1px solid #ffe0b2; padding: 15px; border-radius: 5px; margin: 20px 0"
+    >
+        <strong>Lưu ý:</strong>
+        <ul style="margin: 10px 0 0 20px; padding: 0">
+            <li>Thời gian xác nhận có thể mất từ vài phút đến vài giờ làm việc.</li>
+            <li>Vui lòng giữ lại biên lai/chứng từ chuyển khoản để đối chiếu khi cần.</li>
+        </ul>
+    </div>
+
+    <div style="background-color: #f9f9f9; padding: 15px; border-radius: 5px; margin: 20px 0">
+        <h3 style="margin-top: 0">Thông tin đơn hàng:</h3>
+        <p>Tên khóa học: {{ course_name }}</p>
+        <p>Số tiền: <strong>{{ amount }} {{ currency }}</strong></p>
+        <p>Phương thức thanh toán: {{ payment_method_label }}</p>
+        <p>Trạng thái: <strong>Chờ xác nhận chuyển khoản</strong></p>
+        <p>Ngày giao dịch: {{ course_createdAt }}</p>
+    </div>
+
+    <hr style="border: 0; border-top: 1px solid #eee" />
+
+    <p style="font-size: 0.9em; color: #777">
+        Nếu bạn đã chuyển khoản nhưng chưa nhận được xác nhận sau thời gian dài, vui lòng liên hệ bộ phận hỗ trợ để được
+        kiểm tra.
+    </p>
+
+    <p style="font-size: 0.9em; color: #777">
+        Trân trọng,<br />
+        <strong>CUSC Open edX Team</strong>
+    </p>
+</div>

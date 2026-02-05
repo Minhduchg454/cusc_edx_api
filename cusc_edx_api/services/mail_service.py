@@ -15,7 +15,6 @@ def send_templated_email(
     context,
     from_email=None,
 ):
-    logger.info("Bắt đầu gửi email templated (Sử dụng cấu hình trực tiếp)")
 
     # 1. Đảm bảo to_emails luôn là một danh sách (List)
     if isinstance(to_emails, str):
@@ -34,7 +33,6 @@ def send_templated_email(
         text_content = strip_tags(html_content)
 
         # 3. Sử dụng trực tiếp email đã test thành công
-        # Thay thế hoàn toàn việc gọi settings.DEFAULT_FROM_EMAIL
         final_from_email = "taolink14@gmail.com"
         
         logger.info(f"Gửi từ: {final_from_email} đến: {to_emails}")
