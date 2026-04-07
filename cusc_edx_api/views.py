@@ -20,27 +20,40 @@ from django.core.mail import send_mail
 from .models import EcommerceOrder
 
 User = get_user_model()
+import logging
+logger = logging.getLogger(__name__)
 
 
 def ping(request):
-    return JsonResponse({"ok": True, "app": "cusc_edx_api"})
+    return JsonResponse({"ok ngon": True, "app": "cusc_edx_api"})
 
 
 # ==== (optional) bảo vệ endpoint bằng header secret đơn giản ==== #
 PAYMENT_API_TOKEN = getattr(settings, "CUSC_PAYMENT_API_TOKEN", None)
 
 def _check_node_auth(request):
-    """
-    Kiểu bảo vệ tối thiểu:
-    - Đặt CUSC_PAYMENT_API_TOKEN trong settings
-    - Node.js gửi header: X-CUSC-PAYMENT-TOKEN: <token>
-    Nếu chưa set token thì coi như tắt auth (DEV).
-    """
-    token = request.headers.get("X-CUSC-PAYMENT-TOKEN")
-    if token != PAYMENT_API_TOKEN:
-        return JsonResponse({"error": "Unauthorized"}, status=401)
-    return None
+    # In ra terminal để biết request đang bắt đầu check auth
+    print(f"\n--- [DEBUG AUTH] Path: {request.path} ---")
 
+    # 1. Kiểm tra MFE (Session)
+    if request.user.is_authenticated:
+        print(f">>> MFE Auth: SUCCESS (User: {request.user.username})")
+        return None
+        
+    # 2. Kiểm tra Token (Node.js cũ)
+    token = request.headers.get("X-CUSC-PAYMENT-TOKEN")
+    
+    # Log thông tin Token nhận được
+    print(f">>> Header Token: '{token}'")
+    print(f">>> Expected Token: '{PAYMENT_API_TOKEN}'")
+
+    if PAYMENT_API_TOKEN and token == PAYMENT_API_TOKEN:
+        print(">>> Node.js Auth: SUCCESS (Token matched)")
+        return None
+
+    # 3. Thất bại
+    print(">>> AUTH: FAILED (Unauthorized)")
+    return JsonResponse({"error": "Unauthorized"}, status=401)
 
 def _parse_json(request):
     try:

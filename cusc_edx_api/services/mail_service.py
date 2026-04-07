@@ -6,54 +6,67 @@ from django.utils.html import strip_tags
 
 logger = logging.getLogger(__name__)
 
-
 def send_templated_email(
     *,
     to_emails,
     subject,
     template_name,
     context,
-    from_email=None,
 ):
+    """
+    Gửi email HTML + plain text từ template Django.
 
-    # 1. Đảm bảo to_emails luôn là một danh sách (List)
+    Args:
+        to_emails (str | list[str]): Email người nhận (chuỗi hoặc danh sách)
+        subject (str): Tiêu đề email
+        template_name (str): Tên file template (ví dụ: 'emails/welcome.html')
+        context (dict): Dữ liệu truyền vào template
+
+    Returns:
+        int: Số lượng email đã gửi thành công (thường là 1)
+
+    Raises:
+        ValueError: Nếu thiếu email người nhận hoặc template render rỗng
+    """
+    # Chuẩn hóa danh sách email người nhận
     if isinstance(to_emails, str):
         to_emails = [to_emails]
 
-    if not to_emails:
-        logger.error("Không có email người nhận")
-        raise ValueError("Missing recipient email")
+    if not to_emails or not all(to_emails):
+        logger.error("Không có email người nhận hợp lệ")
+        raise ValueError("Missing valid recipient email(s)")
+
 
     try:
-        # 2. Render HTML template
+        # Render template HTML
         html_content = render_to_string(template_name, context)
-        if not html_content.strip():
+
+        if not html_content or not html_content.strip():
             raise ValueError(f"Template '{template_name}' render ra nội dung rỗng")
 
+        # Tạo phiên bản plain text
         text_content = strip_tags(html_content)
 
-        # 3. Sử dụng trực tiếp email đã test thành công
-        final_from_email = "taolink14@gmail.com"
-        
-        logger.info(f"Gửi từ: {final_from_email} đến: {to_emails}")
+        logger.info(f"Gửi email từ → {to_emails} | Subject: {subject}")
 
-        # 4. Tạo email message
+        # Tạo đối tượng email
         msg = EmailMultiAlternatives(
             subject=subject,
             body=text_content,
-            from_email=final_from_email,
             to=to_emails,
         )
 
-        # 5. Đính kèm nội dung HTML
+        # Đính kèm phiên bản HTML
         msg.attach_alternative(html_content, "text/html")
 
-        # 6. Thực hiện gửi
-        sent = msg.send(fail_silently=False)
+        # Gửi thật (fail_silently=False → sẽ raise exception nếu lỗi)
+        sent_count = msg.send(fail_silently=False)
 
-        logger.info(f"Kết quả SMTP: {sent}")
-        return sent
+        logger.info(f"Gửi email thành công - SMTP trả về: {sent_count}")
+        return sent_count
 
     except Exception:
-        logger.exception("Lỗi khi gửi email qua API")
+        logger.exception(
+            f"Lỗi khi gửi email | to: {to_emails} | subject: {subject}"
+        )
         raise
