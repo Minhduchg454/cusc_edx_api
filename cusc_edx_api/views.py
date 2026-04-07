@@ -25,6 +25,7 @@ logger = logging.getLogger(__name__)
 
 
 def ping(request):
+    printf("In log")
     return JsonResponse({"ok ngon": True, "app": "cusc_edx_api"})
 
 
@@ -53,7 +54,7 @@ def _check_node_auth(request):
 
     # 3. Thất bại
     print(">>> AUTH: FAILED (Unauthorized)")
-    return JsonResponse({"error": "Unauthorized"}, status=401)
+    return JsonResponse({"error": "Unauthorized - XacThuc"}, status=401)
 
 def _parse_json(request):
     try:
