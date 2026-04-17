@@ -25,8 +25,8 @@ logger = logging.getLogger(__name__)
 
 
 def ping(request):
-    printf("In log")
-    return JsonResponse({"ok ngon": True, "app": "cusc_edx_api"})
+    print("In log")
+    return JsonResponse({"test": "phien ban moi", "app": "cusc_edx_api"})
 
 
 # ==== (optional) bảo vệ endpoint bằng header secret đơn giản ==== #
@@ -466,7 +466,7 @@ def send_mail_simple_api(request):
     sent = send_mail(
         "TEST Gmail SMTP – OK (via API)",
         "Nếu bạn nhận được mail này thì API dùng send_mail hoạt động.",
-        None,  # BẮT BUỘC giữ None
+        None, 
         ["taolink14@gmail.com"],
         fail_silently=False,
     )

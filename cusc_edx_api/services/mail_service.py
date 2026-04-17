@@ -38,28 +38,28 @@ def send_templated_email(
 
 
     try:
-        # Render template HTML
+    
         html_content = render_to_string(template_name, context)
 
         if not html_content or not html_content.strip():
             raise ValueError(f"Template '{template_name}' render ra nội dung rỗng")
 
-        # Tạo phiên bản plain text
+       
         text_content = strip_tags(html_content)
 
         logger.info(f"Gửi email từ → {to_emails} | Subject: {subject}")
 
-        # Tạo đối tượng email
+    
         msg = EmailMultiAlternatives(
             subject=subject,
             body=text_content,
             to=to_emails,
         )
 
-        # Đính kèm phiên bản HTML
+    
         msg.attach_alternative(html_content, "text/html")
 
-        # Gửi thật (fail_silently=False → sẽ raise exception nếu lỗi)
+     
         sent_count = msg.send(fail_silently=False)
 
         logger.info(f"Gửi email thành công - SMTP trả về: {sent_count}")
